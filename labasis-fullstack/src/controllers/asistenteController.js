@@ -7,7 +7,7 @@ class AsistenteController {
   constructor() {
     // Inicializar Gemini
     this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    this.model = this.genAI.getGenerativeModel({ model: 'gemini-pro' });
+    this.model = this.genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
   }
 
   // Obtener contexto del sistema para el asistente
@@ -15,7 +15,10 @@ class AsistenteController {
     try {
       // Obtener información del usuario
       const user = await db.get('SELECT id, nombre, email, rol FROM users WHERE id = ?', [userId]);
-
+      if (!user) {
+      console.error(`Usuario con ID ${userId} no encontrado.`);
+      return null; // Devuelve null si no se encuentra el usuario
+    }
       // Obtener tareas pendientes
       const tareas = await db.all(
         `SELECT COUNT(*) as total, 
@@ -113,7 +116,7 @@ Ahora responde al usuario de forma similar.`;
   }
 
   // Chat con el asistente
-  async chat(req, res) {
+  chat = async (req, res) => {
     try {
       const { mensaje, historial = [] } = req.body;
       const userId = req.user.id;
