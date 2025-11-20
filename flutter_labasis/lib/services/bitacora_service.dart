@@ -76,12 +76,30 @@ class BitacoraService {
   }
 
   // Crear bitácora
-  static Future<Map<String, dynamic>> create(
-    Map<String, dynamic> data,
-  ) async {
+  static Future<int> create({
+    required String nombre,
+    required int laboratorioId,
+    int? plantillaId,
+    String? fecha,
+    String turno = 'mañana',
+  }) async {
     try {
       final token = await AuthService.getToken();
       if (token == null) throw Exception('No hay sesión activa');
+
+      // Validaciones
+      if (nombre.trim().isEmpty) {
+        throw Exception('El nombre es requerido');
+      }
+
+      // Preparar datos
+      final data = {
+        'nombre': nombre.trim(),
+        'laboratorio_id': laboratorioId,
+        if (plantillaId != null) 'plantilla_id': plantillaId,
+        if (fecha != null) 'fecha': fecha,
+        'turno': turno,
+      };
 
       final response = await ApiService.post(
         ApiConfig.bitacorasEndpoint,
@@ -89,20 +107,42 @@ class BitacoraService {
         token: token,
       );
 
-      return response;
+      if (response['success'] == true) {
+        return response['data']['id'] as int;
+      }
+
+      throw Exception(response['message'] ?? 'Error creando bitácora');
     } catch (e) {
+      if (e.toString().contains('laboratorio')) {
+        throw Exception('El laboratorio seleccionado no es válido');
+      }
       throw Exception('Error creando bitácora: $e');
     }
   }
 
   // Actualizar bitácora
-  static Future<Map<String, dynamic>> update(
-    int id,
-    Map<String, dynamic> data,
-  ) async {
+  static Future<void> update({
+    required int id,
+    String? nombre,
+    String? estado,
+  }) async {
     try {
       final token = await AuthService.getToken();
       if (token == null) throw Exception('No hay sesión activa');
+
+      // Preparar datos
+      final data = <String, dynamic>{};
+
+      if (nombre != null && nombre.trim().isNotEmpty) {
+        data['nombre'] = nombre.trim();
+      }
+      if (estado != null && ['borrador', 'completada'].contains(estado)) {
+        data['estado'] = estado;
+      }
+
+      if (data.isEmpty) {
+        throw Exception('No hay campos para actualizar');
+      }
 
       final response = await ApiService.put(
         '${ApiConfig.bitacorasEndpoint}/$id',
@@ -110,14 +150,22 @@ class BitacoraService {
         token: token,
       );
 
-      return response;
+      if (response['success'] != true) {
+        throw Exception(response['message'] ?? 'Error actualizando bitácora');
+      }
     } catch (e) {
+      if (e.toString().contains('no encontrada')) {
+        throw Exception('La bitácora no existe');
+      }
+      if (e.toString().contains('permiso')) {
+        throw Exception('No tienes permiso para actualizar esta bitácora');
+      }
       throw Exception('Error actualizando bitácora: $e');
     }
   }
 
   // Completar bitácora
-  static Future<Map<String, dynamic>> completar(int id) async {
+  static Future<void> completar(int id) async {
     try {
       final token = await AuthService.getToken();
       if (token == null) throw Exception('No hay sesión activa');
@@ -128,14 +176,23 @@ class BitacoraService {
         token: token,
       );
 
-      return response;
+      if (response['success'] != true) {
+        throw Exception(
+            response['message'] ?? 'Error completando bitácora');
+      }
     } catch (e) {
+      if (e.toString().contains('no encontrada')) {
+        throw Exception('La bitácora no existe');
+      }
+      if (e.toString().contains('permiso')) {
+        throw Exception('No tienes permiso para completar esta bitácora');
+      }
       throw Exception('Error completando bitácora: $e');
     }
   }
 
   // Eliminar bitácora
-  static Future<Map<String, dynamic>> delete(int id) async {
+  static Future<void> delete(int id) async {
     try {
       final token = await AuthService.getToken();
       if (token == null) throw Exception('No hay sesión activa');
@@ -145,9 +202,90 @@ class BitacoraService {
         token: token,
       );
 
-      return response;
+      if (response['success'] != true) {
+        throw Exception(response['message'] ?? 'Error eliminando bitácora');
+      }
     } catch (e) {
+      if (e.toString().contains('no encontrada')) {
+        throw Exception('La bitácora no existe');
+      }
+      if (e.toString().contains('permiso')) {
+        throw Exception('No tienes permiso para eliminar esta bitácora');
+      }
       throw Exception('Error eliminando bitácora: $e');
+    }
+  }
+
+  // Obtener por estado
+  static Future<List<BitacoraModel>> getByEstado(String estado) async {
+    try {
+      final bitacoras = await getAll();
+      return bitacoras.where((b) => b.estado == estado).toList();
+    } catch (e) {
+      throw Exception('Error obteniendo bitácoras por estado: $e');
+    }
+  }
+
+  // Obtener borradores
+  static Future<List<BitacoraModel>> getBorradores() async {
+    return getByEstado('borrador');
+  }
+
+  // Obtener completadas
+  static Future<List<BitacoraModel>> getCompletadas() async {
+    return getByEstado('completada');
+  }
+
+  // Obtener por laboratorio
+  static Future<List<BitacoraModel>> getByLaboratorio(int laboratorioId) async {
+    return getAll(laboratorioId: laboratorioId);
+  }
+
+  // Validar datos
+  static String? validarDatos({
+    String? nombre,
+    String? turno,
+    String? estado,
+  }) {
+    if (nombre != null) {
+      if (nombre.trim().isEmpty) {
+        return 'El nombre no puede estar vacío';
+      }
+      if (nombre.length < 3) {
+        return 'El nombre debe tener al menos 3 caracteres';
+      }
+      if (nombre.length > 200) {
+        return 'El nombre no puede exceder 200 caracteres';
+      }
+    }
+
+    if (turno != null) {
+      if (!['mañana', 'tarde', 'noche'].contains(turno)) {
+        return 'Turno inválido';
+      }
+    }
+
+    if (estado != null) {
+      if (!['borrador', 'completada'].contains(estado)) {
+        return 'Estado inválido';
+      }
+    }
+
+    return null;
+  }
+
+  // Obtener estadísticas
+  static Future<Map<String, int>> getEstadisticas() async {
+    try {
+      final bitacoras = await getAll();
+
+      return {
+        'total': bitacoras.length,
+        'borradores': bitacoras.where((b) => b.estado == 'borrador').length,
+        'completadas': bitacoras.where((b) => b.estado == 'completada').length,
+      };
+    } catch (e) {
+      throw Exception('Error obteniendo estadísticas: $e');
     }
   }
 }
