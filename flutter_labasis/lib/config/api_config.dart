@@ -1,39 +1,40 @@
 // lib/config/api_config.dart
 
 class ApiConfig {
-  // URL base del backend
-  static const String baseUrl = 'http://localhost:3000/api';
+  // ✅ CORRECCIÓN: Remover /api del baseUrl
+  // Como estás en emulador Android, usa 10.0.2.2
+  static const String baseUrl = 'http://10.0.2.2:3000/api';
   
-  // Endpoints de autenticación
-  static const String loginEndpoint = '/api/auth/login';
-  static const String registerEndpoint = '/api/auth/register-public';
-  static const String meEndpoint = '/api/auth/me';
+  // Endpoints de autenticación (SIN /api/ porque ya está en baseUrl)
+  static const String loginEndpoint = '/auth/login';
+  static const String registerEndpoint = '/auth/register-public';
+  static const String meEndpoint = '/auth/me';
   
   // Endpoints de usuarios
-  static const String usersEndpoint = '/api/users';
+  static const String usersEndpoint = '/users';
   
   // Endpoints de laboratorios
-  static const String laboratoriosEndpoint = '/api/laboratorios';
+  static const String laboratoriosEndpoint = '/laboratorios';
   
   // Endpoints de tareas
-  static const String tareasEndpoint = '/api/tareas';
-  static const String misTareasEndpoint = '/api/tareas/mis-tareas';
+  static const String tareasEndpoint = '/tareas';
+  static const String misTareasEndpoint = '/tareas/mis-tareas';
   
   // Endpoints de bitácoras
-  static const String bitacorasEndpoint = '/api/bitacoras';
+  static const String bitacorasEndpoint = '/bitacoras';
   
   // Endpoints de objetos perdidos
-  static const String objetosPerdidosEndpoint = '/api/objetos-perdidos';
+  static const String objetosPerdidosEndpoint = '/objetos-perdidos';
   
   // Endpoints de iconos y plantillas
-  static const String iconosEndpoint = '/api/iconos';
-  static const String plantillasEndpoint = '/api/plantillas';
+  static const String iconosEndpoint = '/iconos';
+  static const String plantillasEndpoint = '/plantillas';
   
   // Endpoints de estadísticas
-  static const String statsEndpoint = '/api/stats';
+  static const String statsEndpoint = '/stats';
   
   // Endpoint de upload
-  static const String uploadEndpoint = '/api/upload';
+  static const String uploadEndpoint = '/upload';
   
   // Headers comunes
   static Map<String, String> get headers => {
