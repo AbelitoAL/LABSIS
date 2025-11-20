@@ -1,0 +1,40 @@
+name: flutter_labasis
+description: "Sistema de Gestión de Laboratorios - LABASIS"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # HTTP y networking
+  http: ^1.2.0
+  
+  # State management
+  provider: ^6.1.2
+  
+  # Local Storage
+  shared_preferences: ^2.2.2
+  
+  # UI y diseño
+  cupertino_icons: ^1.0.8
+  
+  # Utilidades
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Puedes agregar assets aquí cuando los necesites
+  # assets:
+  #   - assets/images/
+  #   - assets/icons/
