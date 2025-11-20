@@ -39,7 +39,9 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         type: BottomNavigationBarType.fixed,
         selectedItemColor: const Color(0xFF2196F3),
-        unselectedItemColor: Colors.grey,
+        unselectedItemColor: Colors.grey[400],
+        selectedFontSize: 12,
+        unselectedFontSize: 12,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
@@ -80,9 +82,9 @@ class _HomeContent extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // Header
+            // Header con logo y notificaciones
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -92,73 +94,50 @@ class _HomeContent extends StatelessWidget {
                       color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.notifications_outlined),
-                    color: Colors.white,
+                    icon: Stack(
+                      children: [
+                        const Icon(
+                          Icons.notifications_outlined,
+                          color: Colors.white,
+                          size: 28,
+                        ),
+                        // Badge de notificaciones (opcional)
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            constraints: const BoxConstraints(
+                              minWidth: 8,
+                              minHeight: 8,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                     onPressed: () {
-                      // TODO: Implementar notificaciones
+                      // TODO: Navegar a notificaciones
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Notificaciones - Próximamente'),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
                     },
                   ),
                 ],
               ),
             ),
-            
-            // Saludo
-            Container(
-              width: double.infinity,
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Colors.white,
-                    child: Text(
-                      user?.nombre.substring(0, 1).toUpperCase() ?? 'A',
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2196F3),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '¡Hola, ${user?.nombre.split(' ')[0] ?? 'Usuario'}!',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          user?.rol == 'admin'
-                              ? 'Administrador'
-                              : 'Auxiliar',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            
-            // Contenido principal
+
+            // Contenido principal (blanco)
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -174,27 +153,88 @@ class _HomeContent extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Saludo personalizado con avatar
+                      Row(
+                        children: [
+                          // Avatar circular
+                          Container(
+                            width: 60,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF2196F3).withOpacity(0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: Text(
+                                user?.nombre?.substring(0, 1).toUpperCase() ?? 'U',
+                                style: const TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF2196F3),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          // Saludo y rol
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '¡Hola, ${user?.nombre ?? 'Usuario'}!',
+                                  style: const TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  user?.rol == 'admin' ? 'Administrador' : 'Auxiliar',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      
+                      const SizedBox(height: 32),
+                      
+                      // Título de Accesos Rápidos
                       const Text(
                         'Accesos Rápidos',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 16),
                       
-                      // Grid de accesos rápidos
+                      // Grid de tarjetas 2x2
                       GridView.count(
-                        crossAxisCount: 2,
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
+                        crossAxisCount: 2,
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
+                        childAspectRatio: 1.1,
                         children: [
                           _QuickAccessCard(
                             icon: Icons.science,
                             iconColor: const Color(0xFF2196F3),
                             label: 'Laboratorios',
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                const Color(0xFF2196F3).withOpacity(0.1),
+                                const Color(0xFF2196F3).withOpacity(0.05),
+                              ],
+                            ),
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -208,6 +248,14 @@ class _HomeContent extends StatelessWidget {
                             icon: Icons.assignment,
                             iconColor: const Color(0xFFFF9800),
                             label: 'Mis Tareas',
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                const Color(0xFFFF9800).withOpacity(0.1),
+                                const Color(0xFFFF9800).withOpacity(0.05),
+                              ],
+                            ),
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -221,6 +269,14 @@ class _HomeContent extends StatelessWidget {
                             icon: Icons.description,
                             iconColor: const Color(0xFF4CAF50),
                             label: 'Bitácoras',
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                const Color(0xFF4CAF50).withOpacity(0.1),
+                                const Color(0xFF4CAF50).withOpacity(0.05),
+                              ],
+                            ),
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -234,12 +290,19 @@ class _HomeContent extends StatelessWidget {
                             icon: Icons.inventory_2,
                             iconColor: const Color(0xFF9C27B0),
                             label: 'Objetos Perdidos',
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                const Color(0xFF9C27B0).withOpacity(0.1),
+                                const Color(0xFF9C27B0).withOpacity(0.05),
+                              ],
+                            ),
                             onTap: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) =>
-                                      const ObjetosPerdidosScreen(),
+                                  builder: (_) => const ObjetosPerdidosScreen(),
                                 ),
                               );
                             },
@@ -262,51 +325,60 @@ class _QuickAccessCard extends StatelessWidget {
   final IconData icon;
   final Color iconColor;
   final String label;
+  final Gradient gradient;
   final VoidCallback onTap;
 
   const _QuickAccessCard({
     required this.icon,
     required this.iconColor,
     required this.label,
+    required this.gradient,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey[50],
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey[200]!),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                size: 40,
-                color: iconColor,
-              ),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: gradient,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: iconColor.withOpacity(0.2),
+              width: 1.5,
             ),
-            const SizedBox(height: 12),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: iconColor.withOpacity(0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  size: 40,
+                  color: iconColor,
+                ),
               ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+              const SizedBox(height: 12),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[800],
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -68,11 +68,24 @@ class _TareasScreenState extends State<TareasScreen> {
   Color _getPrioridadColor(String prioridad) {
     switch (prioridad.toLowerCase()) {
       case 'alta':
-        return Colors.red;
+        return const Color(0xFFF44336); // Rojo
       case 'media':
-        return Colors.orange;
+        return const Color(0xFFFF9800); // Naranja
       case 'baja':
-        return Colors.green;
+        return const Color(0xFF4CAF50); // Verde
+      default:
+        return Colors.grey;
+    }
+  }
+
+  Color _getEstadoColor(String estado) {
+    switch (estado.toLowerCase()) {
+      case 'pendiente':
+        return const Color(0xFFFFC107); // Amarillo
+      case 'en_proceso':
+        return const Color(0xFF2196F3); // Azul
+      case 'completada':
+        return const Color(0xFF4CAF50); // Verde
       default:
         return Colors.grey;
     }
@@ -121,11 +134,12 @@ class _TareasScreenState extends State<TareasScreen> {
                 ),
                 child: Column(
                   children: [
-                    // Filtros
+                    // Filtros horizontales
                     Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Row(
                           children: [
                             _FiltroChip(
@@ -162,52 +176,75 @@ class _TareasScreenState extends State<TareasScreen> {
                           ? const Center(child: CircularProgressIndicator())
                           : _error != null
                               ? Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(24),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        const Icon(
-                                          Icons.error_outline,
-                                          size: 64,
-                                          color: Colors.red,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.error_outline,
+                                        size: 64,
+                                        color: Colors.grey[400],
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        _error!,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Colors.grey[600],
                                         ),
-                                        const SizedBox(height: 16),
-                                        Text(
-                                          _error!,
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(fontSize: 16),
-                                        ),
-                                        const SizedBox(height: 16),
-                                        ElevatedButton(
-                                          onPressed: _loadTareas,
-                                          child: const Text('Reintentar'),
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      ElevatedButton.icon(
+                                        onPressed: _loadTareas,
+                                        icon: const Icon(Icons.refresh),
+                                        label: const Text('Reintentar'),
+                                      ),
+                                    ],
                                   ),
                                 )
                               : _tareasFiltradas.isEmpty
-                                  ? const Center(
-                                      child: Text('No hay tareas'),
-                                    )
-                                  : ListView.builder(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
+                                  ? Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.assignment_outlined,
+                                            size: 64,
+                                            color: Colors.grey[400],
+                                          ),
+                                          const SizedBox(height: 16),
+                                          Text(
+                                            'No hay tareas',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.grey[600],
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      itemCount: _tareasFiltradas.length,
-                                      itemBuilder: (context, index) {
-                                        final tarea = _tareasFiltradas[index];
-                                        return _TareaCard(
-                                          tarea: tarea,
-                                          prioridadColor:
-                                              _getPrioridadColor(tarea.prioridad),
-                                          onTap: () {
-                                            _showTareaDetail(tarea);
-                                          },
-                                        );
-                                      },
+                                    )
+                                  : RefreshIndicator(
+                                      onRefresh: _loadTareas,
+                                      child: ListView.builder(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 8,
+                                        ),
+                                        itemCount: _tareasFiltradas.length,
+                                        itemBuilder: (context, index) {
+                                          final tarea = _tareasFiltradas[index];
+                                          return _TareaCard(
+                                            tarea: tarea,
+                                            prioridadColor: _getPrioridadColor(
+                                                tarea.prioridad),
+                                            estadoColor:
+                                                _getEstadoColor(tarea.estado),
+                                            onTap: () {
+                                              _showTareaDetail(tarea);
+                                            },
+                                          );
+                                        },
+                                      ),
                                     ),
                     ),
                   ],
@@ -224,129 +261,163 @@ class _TareasScreenState extends State<TareasScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        minChildSize: 0.5,
-        maxChildSize: 0.95,
-        expand: false,
-        builder: (context, scrollController) {
-          return SingleChildScrollView(
-            controller: scrollController,
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Título
+            Text(
+              tarea.titulo,
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Descripción
+            if (tarea.descripcion != null && tarea.descripcion!.isNotEmpty) ...[
+              const Text(
+                'Descripción:',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                tarea.descripcion!,
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 20),
+            ],
+
+            // Info en fila
+            Row(
               children: [
-                Text(
-                  tarea.titulo,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: _DetailItem(
+                    label: 'Estado:',
+                    value: tarea.estadoTexto,
+                    valueColor: _getEstadoColor(tarea.estado),
                   ),
                 ),
-                const SizedBox(height: 16),
-                if (tarea.descripcion != null) ...[
-                  const Text(
-                    'Descripción:',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(tarea.descripcion!),
-                  const SizedBox(height: 16),
-                ],
-                Row(
-                  children: [
-                    const Text(
-                      'Estado:',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(tarea.estadoTexto),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    const Text(
-                      'Prioridad:',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(tarea.prioridadTexto),
-                  ],
-                ),
-                if (tarea.fechaLimite != null) ...[
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      const Text(
-                        'Fecha límite:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        DateFormat('dd/MM/yyyy')
-                            .format(DateTime.parse(tarea.fechaLimite!)),
-                      ),
-                    ],
-                  ),
-                ],
-                const SizedBox(height: 24),
-                if (tarea.estado != 'completada')
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        try {
-                          await TareaService.marcarCompletada(tarea.id);
-                          Navigator.pop(context);
-                          _loadTareas();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Tarea completada'),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(e.toString()),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                      ),
-                      child: const Text(
-                        'COMPLETAR',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('CERRAR'),
+                Expanded(
+                  child: _DetailItem(
+                    label: 'Prioridad:',
+                    value: tarea.prioridadTexto,
+                    valueColor: _getPrioridadColor(tarea.prioridad),
                   ),
                 ),
               ],
             ),
-          );
-        },
+
+            if (tarea.fechaLimite != null) ...[
+              const SizedBox(height: 16),
+              _DetailItem(
+                label: 'Fecha límite:',
+                value: DateFormat('dd/MM/yyyy').format(
+                  DateTime.parse(tarea.fechaLimite!),
+                ),
+              ),
+            ],
+
+            const SizedBox(height: 24),
+
+            // Botones
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      side: BorderSide(color: Colors.grey[400]!),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'CERRAR',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                if (tarea.estado != 'completada') ...[
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        await _completarTarea(tarea.id);
+                        if (mounted) Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF4CAF50),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'COMPLETAR',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
+
+  Future<void> _completarTarea(int tareaId) async {
+    try {
+      await TareaService.marcarCompletada(tareaId);
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✓ Tarea completada exitosamente'),
+            backgroundColor: Color(0xFF4CAF50),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+      
+      // Recargar tareas
+      _loadTareas();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
 }
 
+// Widget para los filtros
 class _FiltroChip extends StatelessWidget {
   final String label;
   final bool isSelected;
@@ -363,7 +434,7 @@ class _FiltroChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFF2196F3) : Colors.grey[200],
           borderRadius: BorderRadius.circular(20),
@@ -373,6 +444,7 @@ class _FiltroChip extends StatelessWidget {
           style: TextStyle(
             color: isSelected ? Colors.white : Colors.black87,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            fontSize: 14,
           ),
         ),
       ),
@@ -380,14 +452,17 @@ class _FiltroChip extends StatelessWidget {
   }
 }
 
+// Widget para las tarjetas de tareas
 class _TareaCard extends StatelessWidget {
   final TareaModel tarea;
   final Color prioridadColor;
+  final Color estadoColor;
   final VoidCallback onTap;
 
   const _TareaCard({
     required this.tarea,
     required this.prioridadColor,
+    required this.estadoColor,
     required this.onTap,
   });
 
@@ -395,6 +470,7 @@ class _TareaCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
+      elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -406,7 +482,9 @@ class _TareaCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Título y badge de prioridad
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
                     child: Text(
@@ -417,28 +495,31 @@ class _TareaCard extends StatelessWidget {
                       ),
                     ),
                   ),
+                  const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
+                      horizontal: 10,
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: prioridadColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: prioridadColor),
+                      color: prioridadColor.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: prioridadColor, width: 1.5),
                     ),
                     child: Text(
                       tarea.prioridadTexto,
                       style: TextStyle(
                         color: prioridadColor,
-                        fontSize: 10,
+                        fontSize: 11,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                 ],
               ),
-              if (tarea.descripcion != null) ...[
+
+              // Descripción
+              if (tarea.descripcion != null && tarea.descripcion!.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 Text(
                   tarea.descripcion!,
@@ -446,53 +527,100 @@ class _TareaCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey[600],
+                    color: Colors.grey[700],
                   ),
                 ),
               ],
-              const SizedBox(height: 8),
+
+              const SizedBox(height: 12),
+
+              // Badge de estado y fecha
               Row(
                 children: [
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
+                      horizontal: 12,
+                      vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFC107).withOpacity(0.2),
+                      color: estadoColor.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       tarea.estadoTexto,
-                      style: const TextStyle(
-                        fontSize: 10,
+                      style: TextStyle(
+                        color: estadoColor,
+                        fontSize: 12,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                  if (tarea.fechaLimite != null) ...[
-                    const SizedBox(width: 8),
-                    Icon(
-                      Icons.calendar_today,
-                      size: 12,
-                      color: Colors.grey[600],
+                  const Spacer(),
+                  if (tarea.fechaLimite != null)
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.calendar_today,
+                          size: 14,
+                          color: Colors.grey[600],
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          DateFormat('dd/MM/yyyy').format(
+                            DateTime.parse(tarea.fechaLimite!),
+                          ),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 4),
-                    Text(
-                      DateFormat('dd/MM/yyyy')
-                          .format(DateTime.parse(tarea.fechaLimite!)),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
                 ],
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+// Widget para items de detalle
+class _DetailItem extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color? valueColor;
+
+  const _DetailItem({
+    required this.label,
+    required this.value,
+    this.valueColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            color: Colors.grey,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: valueColor ?? Colors.black87,
+          ),
+        ),
+      ],
     );
   }
 }
