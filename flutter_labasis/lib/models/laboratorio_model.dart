@@ -9,7 +9,7 @@ class LaboratorioModel {
   final String estado; // 'activo', 'mantenimiento', 'inactivo'
   final List<dynamic> equipamiento;
   final List<dynamic> manuales;
-  final Map<String, dynamic> contraseñas;
+  final Map<String, dynamic> contrasenas;
   final Map<String, dynamic> horarios;
   final List<int> auxiliaresAsignados;
   final List<dynamic> imagenes;
@@ -26,7 +26,7 @@ class LaboratorioModel {
     required this.estado,
     required this.equipamiento,
     required this.manuales,
-    required this.contraseñas,
+    required this.contrasenas,
     required this.horarios,
     required this.auxiliaresAsignados,
     required this.imagenes,
@@ -46,7 +46,7 @@ class LaboratorioModel {
       estado: json['estado'] as String? ?? 'activo',
       equipamiento: json['equipamiento'] ?? [],
       manuales: json['manuales'] ?? [],
-      contraseñas: json['contraseñas'] ?? {},
+      contrasenas: json['contraseñas'] ?? {},
       horarios: json['horarios'] ?? {},
       auxiliaresAsignados: json['auxiliares_asignados'] != null
           ? List<int>.from(json['auxiliares_asignados'])
@@ -69,7 +69,7 @@ class LaboratorioModel {
       'estado': estado,
       'equipamiento': equipamiento,
       'manuales': manuales,
-      'contraseñas': contraseñas,
+      'contraseñas': contrasenas,
       'horarios': horarios,
       'auxiliares_asignados': auxiliaresAsignados,
       'imagenes': imagenes,
