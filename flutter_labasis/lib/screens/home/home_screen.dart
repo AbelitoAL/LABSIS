@@ -7,6 +7,7 @@ import '../laboratorios/laboratorios_screen.dart';
 import '../tareas/tareas_screen.dart';
 import '../bitacoras/bitacoras_screen.dart';
 import '../objetos_perdidos/objetos_perdidos_screen.dart';
+import '../asistente/asistente_screen.dart';
 import '../perfil/perfil_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -39,9 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         type: BottomNavigationBarType.fixed,
         selectedItemColor: const Color(0xFF2196F3),
-        unselectedItemColor: Colors.grey[400],
-        selectedFontSize: 12,
-        unselectedFontSize: 12,
+        unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
@@ -82,62 +81,45 @@ class _HomeContent extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // Header con logo y notificaciones
+            // Header
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              padding: const EdgeInsets.all(16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'LABASIS',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                  IconButton(
-                    icon: Stack(
-                      children: [
-                        const Icon(
-                          Icons.notifications_outlined,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '¡Bienvenido/a!',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.9),
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        user?.nombre ?? 'Usuario',
+                        style: const TextStyle(
                           color: Colors.white,
-                          size: 28,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                        // Badge de notificaciones (opcional)
-                        Positioned(
-                          right: 0,
-                          top: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: const BoxDecoration(
-                              color: Colors.red,
-                              shape: BoxShape.circle,
-                            ),
-                            constraints: const BoxConstraints(
-                              minWidth: 8,
-                              minHeight: 8,
-                            ),
-                          ),
+                      ),
+                      Text(
+                        user?.rol == 'admin' ? 'Administrador' : 'Auxiliar',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.9),
+                          fontSize: 14,
                         ),
-                      ],
-                    ),
-                    onPressed: () {
-                      // TODO: Navegar a notificaciones
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Notificaciones - Próximamente'),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-                    },
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
+            const SizedBox(height: 24),
 
-            // Contenido principal (blanco)
+            // Contenido principal
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -153,88 +135,41 @@ class _HomeContent extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Saludo personalizado con avatar
-                      Row(
-                        children: [
-                          // Avatar circular
-                          Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF2196F3).withOpacity(0.1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Center(
-                              child: Text(
-                                user?.nombre?.substring(0, 1).toUpperCase() ?? 'U',
-                                style: const TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF2196F3),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          // Saludo y rol
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '¡Hola, ${user?.nombre ?? 'Usuario'}!',
-                                  style: const TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  user?.rol == 'admin' ? 'Administrador' : 'Auxiliar',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      
-                      const SizedBox(height: 32),
-                      
-                      // Título de Accesos Rápidos
                       const Text(
                         'Accesos Rápidos',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 16),
-                      
-                      // Grid de tarjetas 2x2
+
+                      // Grid de accesos rápidos
                       GridView.count(
+                        crossAxisCount: 2,
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        crossAxisCount: 2,
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
-                        childAspectRatio: 1.1,
                         children: [
+                          // Asistente IA - NUEVA TARJETA
+                          _QuickAccessCard(
+                            icon: Icons.smart_toy,
+                            iconColor: const Color(0xFF6C63FF),
+                            label: 'Asistente IA',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const AsistenteScreen(),
+                                ),
+                              );
+                            },
+                          ),
                           _QuickAccessCard(
                             icon: Icons.science,
                             iconColor: const Color(0xFF2196F3),
                             label: 'Laboratorios',
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                const Color(0xFF2196F3).withOpacity(0.1),
-                                const Color(0xFF2196F3).withOpacity(0.05),
-                              ],
-                            ),
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -248,14 +183,6 @@ class _HomeContent extends StatelessWidget {
                             icon: Icons.assignment,
                             iconColor: const Color(0xFFFF9800),
                             label: 'Mis Tareas',
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                const Color(0xFFFF9800).withOpacity(0.1),
-                                const Color(0xFFFF9800).withOpacity(0.05),
-                              ],
-                            ),
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -269,14 +196,6 @@ class _HomeContent extends StatelessWidget {
                             icon: Icons.description,
                             iconColor: const Color(0xFF4CAF50),
                             label: 'Bitácoras',
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                const Color(0xFF4CAF50).withOpacity(0.1),
-                                const Color(0xFF4CAF50).withOpacity(0.05),
-                              ],
-                            ),
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -290,19 +209,12 @@ class _HomeContent extends StatelessWidget {
                             icon: Icons.inventory_2,
                             iconColor: const Color(0xFF9C27B0),
                             label: 'Objetos Perdidos',
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                const Color(0xFF9C27B0).withOpacity(0.1),
-                                const Color(0xFF9C27B0).withOpacity(0.05),
-                              ],
-                            ),
                             onTap: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => const ObjetosPerdidosScreen(),
+                                  builder: (_) =>
+                                      const ObjetosPerdidosScreen(),
                                 ),
                               );
                             },
@@ -325,60 +237,51 @@ class _QuickAccessCard extends StatelessWidget {
   final IconData icon;
   final Color iconColor;
   final String label;
-  final Gradient gradient;
   final VoidCallback onTap;
 
   const _QuickAccessCard({
     required this.icon,
     required this.iconColor,
     required this.label,
-    required this.gradient,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: gradient,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: iconColor.withOpacity(0.2),
-              width: 1.5,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey[50],
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey[200]!),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: iconColor.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                size: 40,
+                color: iconColor,
+              ),
             ),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.15),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  icon,
-                  size: 40,
-                  color: iconColor,
-                ),
+            const SizedBox(height: 12),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
               ),
-              const SizedBox(height: 12),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey[800],
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );

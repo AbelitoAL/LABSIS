@@ -1,11 +1,11 @@
-// server.js - CORRECCIÓN DE RUTAS
+// server.js - LABASIS Backend API
 
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
 
-// Importar rutas (¡AQUÍ ESTÁ EL CAMBIO!)
+// Importar rutas
 const authRoutes = require('./src/routes/authRoutes');
 const laboratoriosRoutes = require('./src/routes/laboratoriosRoutes');
 const tareasRoutes = require('./src/routes/tareasRoutes');
@@ -16,6 +16,7 @@ const objetosPerdidosRoutes = require('./src/routes/objetosPerdidosRoutes');
 const uploadRoutes = require('./src/routes/uploadRoutes');
 const usersRoutes = require('./src/routes/usersRoutes');
 const statsRoutes = require('./src/routes/statsRoutes');
+const asistenteRoutes = require('./src/routes/asistenteRoutes'); // ← NUEVA RUTA
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -39,6 +40,7 @@ app.use('/api/objetos-perdidos', objetosPerdidosRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/asistente', asistenteRoutes); // ← NUEVA RUTA
 
 // Ruta de prueba
 app.get('/', (req, res) => {
@@ -55,7 +57,8 @@ app.get('/', (req, res) => {
       bitacoras: '/api/bitacoras',
       objetosPerdidos: '/api/objetos-perdidos',
       upload: '/api/upload',
-      stats: '/api/stats'
+      stats: '/api/stats',
+      asistente: '/api/asistente' // ← NUEVO ENDPOINT
     }
   });
 });
@@ -94,6 +97,10 @@ app.listen(PORT, () => {
 ║   ✅ /api/plantillas                   ║
 ║   ✅ /api/bitacoras                    ║
 ║   ✅ /api/objetos-perdidos             ║
+║   ✅ /api/upload                       ║
+║   ✅ /api/users                        ║
+║   ✅ /api/stats                        ║
+║   🤖 /api/asistente                    ║
 ╚════════════════════════════════════════╝
   `);
 });
