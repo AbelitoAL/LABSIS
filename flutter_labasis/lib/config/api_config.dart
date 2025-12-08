@@ -31,6 +31,8 @@ class ApiConfig {
   
   // Endpoints de estadísticas
   static const String statsEndpoint = '/api/stats';
+  static const String dashboardEndpoint = '/api/stats/dashboard'; // ← NUEVO
+  static const String auxiliaresEndpoint = '/api/stats/auxiliares'; // ← NUEVO
   
   // Endpoint de upload
   static const String uploadEndpoint = '/api/upload';
@@ -52,5 +54,20 @@ class ApiConfig {
   // Construir URL completa
   static String buildUrl(String endpoint) {
     return '$baseUrl$endpoint';
+  }
+  
+  // ==========================================
+  // MÉTODOS ESPECÍFICOS PARA ESTADÍSTICAS
+  // ==========================================
+  
+  // URL completa para el dashboard
+  static String get dashboardUrl => buildUrl(dashboardEndpoint);
+  
+  // URL completa para obtener auxiliares
+  static String get auxiliaresUrl => buildUrl(auxiliaresEndpoint);
+  
+  // URL del dashboard con filtro de auxiliar
+  static String dashboardUrlConAuxiliar(int auxiliarId) {
+    return '${buildUrl(dashboardEndpoint)}?auxiliar_id=$auxiliarId';
   }
 }

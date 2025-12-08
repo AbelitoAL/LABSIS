@@ -8,6 +8,7 @@ import '../tareas/tareas_screen.dart';
 import '../bitacoras/bitacoras_screen.dart';
 import '../objetos_perdidos/objetos_perdidos_screen.dart';
 import '../asistente/asistente_screen.dart';
+import '../estadisticas/estadisticas_screen.dart'; // ← NUEVO
 import '../perfil/perfil_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -152,7 +153,9 @@ class _HomeContent extends StatelessWidget {
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
                         children: [
-                          // Asistente IA - NUEVA TARJETA
+                          // ==========================================
+                          // ASISTENTE IA (TODOS)
+                          // ==========================================
                           _QuickAccessCard(
                             icon: Icons.smart_toy,
                             iconColor: const Color(0xFF6C63FF),
@@ -166,6 +169,28 @@ class _HomeContent extends StatelessWidget {
                               );
                             },
                           ),
+
+                          // ==========================================
+                          // PANEL (SOLO ADMIN) ← NUEVO
+                          // ==========================================
+                          if (user?.rol == 'admin')
+                            _QuickAccessCard(
+                              icon: Icons.dashboard,
+                              iconColor: const Color(0xFFE91E63),
+                              label: 'Panel',
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const EstadisticasScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+
+                          // ==========================================
+                          // TARJETAS EXISTENTES
+                          // ==========================================
                           _QuickAccessCard(
                             icon: Icons.science,
                             iconColor: const Color(0xFF2196F3),
