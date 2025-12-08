@@ -17,7 +17,8 @@ const uploadRoutes = require('./src/routes/uploadRoutes');
 const usersRoutes = require('./src/routes/usersRoutes');
 const statsRoutes = require('./src/routes/statsRoutes');
 const asistenteRoutes = require('./src/routes/asistenteRoutes');
-const manualesRoutes = require('./src/routes/manualesRoutes'); // ← NUEVA RUTA
+const manualesRoutes = require('./src/routes/manualesRoutes');
+const auxiliaresRoutes = require('./src/routes/auxiliaresRoutes'); // ← NUEVA RUTA
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -42,7 +43,8 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/asistente', asistenteRoutes);
-app.use('/api/manuales', manualesRoutes); // ← NUEVA RUTA
+app.use('/api/manuales', manualesRoutes);
+app.use('/api/auxiliares', auxiliaresRoutes); // ← NUEVA RUTA
 
 // Ruta de prueba
 app.get('/', (req, res) => {
@@ -61,7 +63,8 @@ app.get('/', (req, res) => {
       upload: '/api/upload',
       stats: '/api/stats',
       asistente: '/api/asistente',
-      manuales: '/api/manuales' // ← NUEVO ENDPOINT
+      manuales: '/api/manuales',
+      auxiliares: '/api/auxiliares' // ← NUEVO ENDPOINT
     }
   });
 });
@@ -105,6 +108,7 @@ app.listen(PORT, () => {
 ║   ✅ /api/stats                        ║
 ║   🤖 /api/asistente                    ║
 ║   📖 /api/manuales                     ║
+║   👥 /api/auxiliares                   ║
 ╚════════════════════════════════════════╝
   `);
 });

@@ -11,6 +11,7 @@ import '../asistente/asistente_screen.dart';
 import '../estadisticas/estadisticas_screen.dart';
 import '../manuales/manuales_screen.dart'; // ← NUEVO
 import '../perfil/perfil_screen.dart';
+import '../auxiliares/auxiliares_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -205,7 +206,20 @@ class _HomeContent extends StatelessWidget {
                               );
                             },
                           ),
-
+                            if (user?.rol == 'admin')
+                              _QuickAccessCard(
+                                icon: Icons.people,
+                                iconColor: const Color(0xFFFF6B6B),
+                                label: 'Auxiliares',
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const AuxiliaresScreen(),
+                                    ),
+                                  );
+                                },
+                              ),
                           // ==========================================
                           // TARJETAS EXISTENTES
                           // ==========================================

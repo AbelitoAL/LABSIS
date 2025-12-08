@@ -65,7 +65,7 @@ class EstadisticasService {
       print('👥 Obteniendo lista de auxiliares...');
 
       final response = await http.get(
-        Uri.parse(ApiConfig.auxiliaresUrl),
+        Uri.parse(ApiConfig.statsAuxiliaresUrl),
         headers: ApiConfig.headersWithAuth(token),
       );
 

@@ -32,10 +32,13 @@ class ApiConfig {
   // Endpoints de estadísticas
   static const String statsEndpoint = '/api/stats';
   static const String dashboardEndpoint = '/api/stats/dashboard';
-  static const String auxiliaresEndpoint = '/api/stats/auxiliares';
+  static const String statsAuxiliaresEndpoint = '/api/stats/auxiliares'; // ← Renombrado para claridad
   
-  // Endpoints de manuales (NUEVO) ← AGREGADO
+  // Endpoints de manuales
   static const String manualesEndpoint = '/api/manuales';
+  
+  // Endpoints de auxiliares (gestión) ← NUEVO
+  static const String auxiliaresEndpoint = '/api/auxiliares';
   
   // Endpoint de upload
   static const String uploadEndpoint = '/api/upload';
@@ -66,11 +69,27 @@ class ApiConfig {
   // URL completa para el dashboard
   static String get dashboardUrl => buildUrl(dashboardEndpoint);
   
-  // URL completa para obtener auxiliares
-  static String get auxiliaresUrl => buildUrl(auxiliaresEndpoint);
+  // URL completa para obtener estadísticas de auxiliares
+  static String get statsAuxiliaresUrl => buildUrl(statsAuxiliaresEndpoint);
   
   // URL del dashboard con filtro de auxiliar
   static String dashboardUrlConAuxiliar(int auxiliarId) {
     return '${buildUrl(dashboardEndpoint)}?auxiliar_id=$auxiliarId';
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

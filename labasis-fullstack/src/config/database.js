@@ -27,6 +27,9 @@ class Database {
         nombre TEXT NOT NULL,
         rol TEXT NOT NULL DEFAULT 'auxiliar',
         activo INTEGER DEFAULT 1,
+        telefono TEXT,
+        estado TEXT DEFAULT 'activo',
+        notas TEXT,
         laboratorios_asignados TEXT,
         fcm_token TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -156,7 +159,7 @@ class Database {
       )
     `);
 
-    // Tabla de manuales (NUEVA) ← AGREGADA
+    // Tabla de manuales
     this.db.run(`
       CREATE TABLE IF NOT EXISTS manuales (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -169,6 +172,41 @@ class Database {
         FOREIGN KEY (laboratorio_id) REFERENCES laboratorios(id),
         FOREIGN KEY (created_by) REFERENCES users(id),
         FOREIGN KEY (updated_by) REFERENCES users(id)
+      )
+    `);
+
+    // ==========================================
+    // TABLAS NUEVAS PARA SISTEMA DE AUXILIARES
+    // ==========================================
+
+    // Tabla de asignaciones de laboratorios a auxiliares
+    this.db.run(`
+      CREATE TABLE IF NOT EXISTS auxiliares_laboratorios (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        auxiliar_id INTEGER NOT NULL,
+        laboratorio_id INTEGER NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        created_by INTEGER,
+        FOREIGN KEY (auxiliar_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (laboratorio_id) REFERENCES laboratorios(id) ON DELETE CASCADE,
+        FOREIGN KEY (created_by) REFERENCES users(id),
+        UNIQUE(auxiliar_id, laboratorio_id)
+      )
+    `);
+
+    // Tabla de horarios de auxiliares
+    this.db.run(`
+      CREATE TABLE IF NOT EXISTS auxiliares_horarios (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        auxiliar_id INTEGER NOT NULL,
+        dia_semana TEXT NOT NULL,
+        hora_inicio TEXT NOT NULL,
+        hora_fin TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        created_by INTEGER,
+        FOREIGN KEY (auxiliar_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (created_by) REFERENCES users(id)
       )
     `);
 
