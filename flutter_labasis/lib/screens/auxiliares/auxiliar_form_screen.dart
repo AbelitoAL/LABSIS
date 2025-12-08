@@ -915,17 +915,40 @@ class _AuxiliarFormScreenState extends State<AuxiliarFormScreen> {
 
   void _siguientePagina() {
     if (_currentPage == 0) {
-      if (!_formKey.currentState!.validate()) {
+      // Validar datos básicos antes de continuar
+      if (_nombreController.text.trim().isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('El nombre es requerido'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+        return;
+      }
+      
+      if (_emailController.text.trim().isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('El email es requerido'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
         return;
       }
     } else if (_currentPage == 1) {
       if (_laboratoriosSeleccionados.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Debes seleccionar al menos un laboratorio'),
-            backgroundColor: Colors.orange,
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Debes seleccionar al menos un laboratorio'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
         return;
       }
     }
@@ -968,34 +991,115 @@ class _AuxiliarFormScreenState extends State<AuxiliarFormScreen> {
   }
 
   Future<void> _guardar() async {
-    // Validar formulario
-    if (!_formKey.currentState!.validate()) {
+    // Validar datos personales
+    if (_nombreController.text.trim().isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('El nombre es requerido'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      _pageController.jumpToPage(0);
+      return;
+    }
+
+    if (_emailController.text.trim().isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('El email es requerido'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      _pageController.jumpToPage(0);
+      return;
+    }
+
+    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(_emailController.text.trim())) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Email inválido'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      _pageController.jumpToPage(0);
+      return;
+    }
+
+    if (!_esEdicion && _passwordController.text.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('La contraseña es requerida'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      _pageController.jumpToPage(0);
+      return;
+    }
+
+    if (_passwordController.text.isNotEmpty && _passwordController.text.length < 6) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('La contraseña debe tener al menos 6 caracteres'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
       _pageController.jumpToPage(0);
       return;
     }
 
     // Validar laboratorios
     if (_laboratoriosSeleccionados.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Debes seleccionar al menos un laboratorio'),
-          backgroundColor: Colors.orange,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Debes seleccionar al menos un laboratorio'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
       _pageController.jumpToPage(1);
       return;
     }
 
     // Validar horarios
     if (_horarios.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Debes agregar al menos un horario'),
-          backgroundColor: Colors.orange,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Debes agregar al menos un horario'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
       return;
     }
+
+    // Validar que los horarios tengan valores
+    for (var horario in _horarios) {
+      if (horario.horaInicio.isEmpty || horario.horaFin.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Completa el horario del ${horario.diaSemana}'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+        return;
+      }
+    }
+
+    if (!mounted) return;
 
     setState(() => _isLoading = true);
 
@@ -1039,13 +1143,16 @@ class _AuxiliarFormScreenState extends State<AuxiliarFormScreen> {
         Navigator.pop(context, true);
       }
     } catch (e) {
-      setState(() => _isLoading = false);
+      print('❌ Error guardando auxiliar: $e');
       
       if (mounted) {
+        setState(() => _isLoading = false);
+        
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error: $e'),
             backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
           ),
         );
       }
