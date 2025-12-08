@@ -8,7 +8,8 @@ import '../tareas/tareas_screen.dart';
 import '../bitacoras/bitacoras_screen.dart';
 import '../objetos_perdidos/objetos_perdidos_screen.dart';
 import '../asistente/asistente_screen.dart';
-import '../estadisticas/estadisticas_screen.dart'; // ← NUEVO
+import '../estadisticas/estadisticas_screen.dart';
+import '../manuales/manuales_screen.dart'; // ← NUEVO
 import '../perfil/perfil_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -171,7 +172,7 @@ class _HomeContent extends StatelessWidget {
                           ),
 
                           // ==========================================
-                          // PANEL (SOLO ADMIN) ← NUEVO
+                          // PANEL (SOLO ADMIN)
                           // ==========================================
                           if (user?.rol == 'admin')
                             _QuickAccessCard(
@@ -187,6 +188,23 @@ class _HomeContent extends StatelessWidget {
                                 );
                               },
                             ),
+
+                          // ==========================================
+                          // MANUALES (TODOS) ← NUEVO
+                          // ==========================================
+                          _QuickAccessCard(
+                            icon: Icons.menu_book,
+                            iconColor: const Color(0xFF667EEA),
+                            label: 'Manuales',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const ManualesScreen(),
+                                ),
+                              );
+                            },
+                          ),
 
                           // ==========================================
                           // TARJETAS EXISTENTES

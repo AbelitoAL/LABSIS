@@ -31,8 +31,11 @@ class ApiConfig {
   
   // Endpoints de estadísticas
   static const String statsEndpoint = '/api/stats';
-  static const String dashboardEndpoint = '/api/stats/dashboard'; // ← NUEVO
-  static const String auxiliaresEndpoint = '/api/stats/auxiliares'; // ← NUEVO
+  static const String dashboardEndpoint = '/api/stats/dashboard';
+  static const String auxiliaresEndpoint = '/api/stats/auxiliares';
+  
+  // Endpoints de manuales (NUEVO) ← AGREGADO
+  static const String manualesEndpoint = '/api/manuales';
   
   // Endpoint de upload
   static const String uploadEndpoint = '/api/upload';

@@ -156,6 +156,22 @@ class Database {
       )
     `);
 
+    // Tabla de manuales (NUEVA) ← AGREGADA
+    this.db.run(`
+      CREATE TABLE IF NOT EXISTS manuales (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        laboratorio_id INTEGER NOT NULL,
+        items TEXT NOT NULL,
+        created_by INTEGER,
+        updated_by INTEGER,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (laboratorio_id) REFERENCES laboratorios(id),
+        FOREIGN KEY (created_by) REFERENCES users(id),
+        FOREIGN KEY (updated_by) REFERENCES users(id)
+      )
+    `);
+
     console.log('✅ Tablas de base de datos inicializadas');
   }
 
