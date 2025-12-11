@@ -40,4 +40,43 @@ const isAdmin = (req, res, next) => {
   next();
 };
 
-module.exports = { authMiddleware, isAdmin };
+// Middleware para verificar si es docente
+const isDocente = (req, res, next) => {
+  if (req.user.rol !== 'docente') {
+    return res.status(403).json({
+      success: false,
+      message: 'Acceso denegado. Solo docentes.'
+    });
+  }
+  next();
+};
+
+// Middleware para verificar si es docente o admin
+const isDocenteOrAdmin = (req, res, next) => {
+  if (req.user.rol !== 'docente' && req.user.rol !== 'admin') {
+    return res.status(403).json({
+      success: false,
+      message: 'Acceso denegado. Solo docentes y administradores.'
+    });
+  }
+  next();
+};
+
+// Middleware para verificar si es auxiliar
+const isAuxiliar = (req, res, next) => {
+  if (req.user.rol !== 'auxiliar') {
+    return res.status(403).json({
+      success: false,
+      message: 'Acceso denegado. Solo auxiliares.'
+    });
+  }
+  next();
+};
+
+module.exports = { 
+  authMiddleware, 
+  isAdmin, 
+  isDocente, 
+  isDocenteOrAdmin,
+  isAuxiliar
+};

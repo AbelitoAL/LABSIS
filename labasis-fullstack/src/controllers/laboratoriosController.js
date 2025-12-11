@@ -12,6 +12,9 @@ class LaboratoriosController {
       if (user.rol === 'admin') {
         // Admin ve todos los laboratorios
         laboratorios = await db.all('SELECT * FROM laboratorios ORDER BY created_at DESC');
+      } else if (user.rol === 'docente') {
+        // Docente ve todos los laboratorios (para poder hacer reservas)
+        laboratorios = await db.all('SELECT * FROM laboratorios ORDER BY created_at DESC');
       } else {
         // Auxiliar solo ve sus laboratorios asignados
         const userDetails = await db.get('SELECT laboratorios_asignados FROM users WHERE id = ?', [user.id]);
@@ -68,7 +71,7 @@ class LaboratoriosController {
       }
 
       // Verificar permisos
-      if (user.rol !== 'admin') {
+      if (user.rol === 'auxiliar') {
         const userDetails = await db.get('SELECT laboratorios_asignados FROM users WHERE id = ?', [user.id]);
         const labsAsignados = JSON.parse(userDetails.laboratorios_asignados || '[]');
         
@@ -79,6 +82,7 @@ class LaboratoriosController {
           });
         }
       }
+      // Admin y Docente pueden ver todos los laboratorios
 
       // Parsear campos JSON
       const labData = {

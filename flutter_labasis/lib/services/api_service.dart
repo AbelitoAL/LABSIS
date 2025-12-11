@@ -91,6 +91,30 @@ class ApiService {
     }
   }
 
+  // PATCH request ← NUEVO
+  static Future<Map<String, dynamic>> patch(
+    String endpoint,
+    Map<String, dynamic> body, {
+    String? token,
+  }) async {
+    try {
+      final url = Uri.parse(ApiConfig.buildUrl(endpoint));
+      final headers = token != null
+          ? ApiConfig.headersWithAuth(token)
+          : ApiConfig.headers;
+
+      final response = await http.patch(
+        url,
+        headers: headers,
+        body: jsonEncode(body),
+      );
+
+      return _handleResponse(response);
+    } catch (e) {
+      throw Exception('Error en la petición PATCH: $e');
+    }
+  }
+
   // Manejar respuesta
   static Map<String, dynamic> _handleResponse(http.Response response) {
     final data = jsonDecode(response.body);

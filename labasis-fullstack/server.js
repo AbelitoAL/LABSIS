@@ -19,7 +19,8 @@ const statsRoutes = require('./src/routes/statsRoutes');
 const asistenteRoutes = require('./src/routes/asistenteRoutes');
 const manualesRoutes = require('./src/routes/manualesRoutes');
 const auxiliaresRoutes = require('./src/routes/auxiliaresRoutes');
-const docentesRoutes = require('./src/routes/docentesRoutes'); // ← NUEVA RUTA
+const docentesRoutes = require('./src/routes/docentesRoutes');
+const reservasRoutes = require('./src/routes/reservasRoutes'); // ← NUEVA RUTA
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -46,7 +47,8 @@ app.use('/api/stats', statsRoutes);
 app.use('/api/asistente', asistenteRoutes);
 app.use('/api/manuales', manualesRoutes);
 app.use('/api/auxiliares', auxiliaresRoutes);
-app.use('/api/docentes', docentesRoutes); // ← NUEVA RUTA
+app.use('/api/docentes', docentesRoutes);
+app.use('/api/reservas', reservasRoutes); // ← NUEVA RUTA
 
 // Ruta de prueba
 app.get('/', (req, res) => {
@@ -67,7 +69,8 @@ app.get('/', (req, res) => {
       asistente: '/api/asistente',
       manuales: '/api/manuales',
       auxiliares: '/api/auxiliares',
-      docentes: '/api/docentes' // ← NUEVO ENDPOINT
+      docentes: '/api/docentes',
+      reservas: '/api/reservas' // ← NUEVO ENDPOINT
     }
   });
 });
@@ -113,6 +116,7 @@ app.listen(PORT, () => {
 ║   📖 /api/manuales                     ║
 ║   👥 /api/auxiliares                   ║
 ║   👨‍🏫 /api/docentes                    ║
+║   📅 /api/reservas                     ║
 ╚════════════════════════════════════════╝
   `);
 });

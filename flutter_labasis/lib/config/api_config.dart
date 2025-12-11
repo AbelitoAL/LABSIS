@@ -43,6 +43,9 @@ class ApiConfig {
   // Endpoints de docentes (gestión) ← NUEVO
   static const String docentesEndpoint = '/api/docentes';
   
+  // Endpoints de reservas ← NUEVO
+  static const String reservasEndpoint = '/api/reservas';
+  
   // Endpoint de upload
   static const String uploadEndpoint = '/api/upload';
   

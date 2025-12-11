@@ -919,6 +919,7 @@ class _FormularioBitacoraState extends State<_FormularioBitacora> {
                       // Laboratorio
                       DropdownButtonFormField<int>(
                         value: _laboratorioSeleccionado,
+                        isExpanded: true,
                         decoration: InputDecoration(
                           labelText: 'Laboratorio *',
                           prefixIcon: const Icon(Icons.science),
@@ -929,7 +930,7 @@ class _FormularioBitacoraState extends State<_FormularioBitacora> {
                         items: _laboratorios.map<DropdownMenuItem<int>>((lab) {
                           return DropdownMenuItem<int>(
                             value: lab.id,
-                            child: Text(lab.nombre),
+                            child: Text(lab.nombre, overflow: TextOverflow.ellipsis),
                           );
                         }).toList(),
                         onChanged: isEditing

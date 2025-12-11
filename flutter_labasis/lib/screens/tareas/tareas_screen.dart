@@ -1017,6 +1017,7 @@ class _FormularioTareaState extends State<_FormularioTarea> {
                       // Laboratorio
                       DropdownButtonFormField<int>(
                         value: _laboratorioSeleccionado,
+                        isExpanded: true,
                         decoration: InputDecoration(
                           labelText: 'Laboratorio (Opcional)',
                           prefixIcon: const Icon(Icons.science),
@@ -1027,12 +1028,12 @@ class _FormularioTareaState extends State<_FormularioTarea> {
                         items: [
                           const DropdownMenuItem(
                             value: null,
-                            child: Text('Sin laboratorio'),
+                            child: Text('Sin laboratorio',overflow: TextOverflow.ellipsis,),
                           ),
                           ..._laboratorios.map((lab) {
                             return DropdownMenuItem(
                               value: lab.id,
-                              child: Text(lab.nombre),
+                              child: Text(lab.nombre, overflow: TextOverflow.ellipsis),
                             );
                           }),
                         ],

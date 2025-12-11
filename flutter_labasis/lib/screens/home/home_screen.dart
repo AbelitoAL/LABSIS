@@ -12,7 +12,8 @@ import '../estadisticas/estadisticas_screen.dart';
 import '../manuales/manuales_screen.dart';
 import '../perfil/perfil_screen.dart';
 import '../auxiliares/auxiliares_screen.dart';
-import '../docentes/docentes_screen.dart'; // ← NUEVO
+import '../docentes/docentes_screen.dart';
+import '../reservas/reservas_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -110,7 +111,11 @@ class _HomeContent extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        user?.rol == 'admin' ? 'Administrador' : 'Auxiliar',
+                        user?.rol == 'admin'
+                            ? 'Administrador'
+                            : user?.rol == 'docente'
+                                ? 'Docente'
+                                : 'Auxiliar',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.9),
                           fontSize: 14,
@@ -157,161 +162,197 @@ class _HomeContent extends StatelessWidget {
                         mainAxisSpacing: 16,
                         children: [
                           // ==========================================
-                          // ASISTENTE IA (TODOS)
+                          // SOLO PARA DOCENTES: 2 TARJETAS
                           // ==========================================
-                          _QuickAccessCard(
-                            icon: Icons.smart_toy,
-                            iconColor: const Color(0xFF6C63FF),
-                            label: 'Asistente IA',
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const AsistenteScreen(),
-                                ),
-                              );
-                            },
-                          ),
-
-                          // ==========================================
-                          // PANEL (SOLO ADMIN)
-                          // ==========================================
-                          if (user?.rol == 'admin')
+                          if (user?.rol == 'docente') ...[
+                            // RESERVAS
                             _QuickAccessCard(
-                              icon: Icons.dashboard,
-                              iconColor: const Color(0xFFE91E63),
-                              label: 'Panel',
+                              icon: Icons.calendar_today,
+                              iconColor: const Color(0xFF00BCD4),
+                              label: 'Reservas',
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => const EstadisticasScreen(),
+                                    builder: (_) => const ReservasScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+                            // LABORATORIOS (SOLO LECTURA)
+                            _QuickAccessCard(
+                              icon: Icons.science,
+                              iconColor: const Color(0xFF2196F3),
+                              label: 'Laboratorios',
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const LaboratoriosScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+
+                          // ==========================================
+                          // PARA ADMIN Y AUXILIAR: TODAS LAS TARJETAS
+                          // ==========================================
+                          if (user?.rol != 'docente') ...[
+                            // ASISTENTE IA (ADMIN Y AUXILIAR)
+                            _QuickAccessCard(
+                              icon: Icons.smart_toy,
+                              iconColor: const Color(0xFF6C63FF),
+                              label: 'Asistente IA',
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const AsistenteScreen(),
                                   ),
                                 );
                               },
                             ),
 
-                          // ==========================================
-                          // AUXILIARES (SOLO ADMIN)
-                          // ==========================================
-                          if (user?.rol == 'admin')
+                            // PANEL (SOLO ADMIN)
+                            if (user?.rol == 'admin')
+                              _QuickAccessCard(
+                                icon: Icons.dashboard,
+                                iconColor: const Color(0xFFE91E63),
+                                label: 'Panel',
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const EstadisticasScreen(),
+                                    ),
+                                  );
+                                },
+                              ),
+
+                            // AUXILIARES (SOLO ADMIN)
+                            if (user?.rol == 'admin')
+                              _QuickAccessCard(
+                                icon: Icons.people,
+                                iconColor: const Color(0xFFFF6B6B),
+                                label: 'Auxiliares',
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const AuxiliaresScreen(),
+                                    ),
+                                  );
+                                },
+                              ),
+
+                            // DOCENTES (SOLO ADMIN)
+                            if (user?.rol == 'admin')
+                              _QuickAccessCard(
+                                icon: Icons.school,
+                                iconColor: const Color(0xFF1976D2),
+                                label: 'Docentes',
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const DocentesScreen(),
+                                    ),
+                                  );
+                                },
+                              ),
+
+                            // RESERVAS (ADMIN Y AUXILIAR)
                             _QuickAccessCard(
-                              icon: Icons.people,
-                              iconColor: const Color(0xFFFF6B6B),
-                              label: 'Auxiliares',
+                              icon: Icons.calendar_today,
+                              iconColor: const Color(0xFF00BCD4),
+                              label: 'Reservas',
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => const AuxiliaresScreen(),
+                                    builder: (_) => const ReservasScreen(),
                                   ),
                                 );
                               },
                             ),
 
-                          // ==========================================
-                          // DOCENTES (SOLO ADMIN) ← NUEVO
-                          // ==========================================
-                          if (user?.rol == 'admin')
+                            // MANUALES (ADMIN Y AUXILIAR)
                             _QuickAccessCard(
-                              icon: Icons.school,
-                              iconColor: const Color(0xFF1976D2),
-                              label: 'Docentes',
+                              icon: Icons.menu_book,
+                              iconColor: const Color(0xFF667EEA),
+                              label: 'Manuales',
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => const DocentesScreen(),
+                                    builder: (_) => const ManualesScreen(),
                                   ),
                                 );
                               },
                             ),
 
-                          // ==========================================
-                          // MANUALES (TODOS)
-                          // ==========================================
-                          _QuickAccessCard(
-                            icon: Icons.menu_book,
-                            iconColor: const Color(0xFF667EEA),
-                            label: 'Manuales',
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const ManualesScreen(),
-                                ),
-                              );
-                            },
-                          ),
+                            // LABORATORIOS (ADMIN Y AUXILIAR)
+                            _QuickAccessCard(
+                              icon: Icons.science,
+                              iconColor: const Color(0xFF2196F3),
+                              label: 'Laboratorios',
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const LaboratoriosScreen(),
+                                  ),
+                                );
+                              },
+                            ),
 
-                          // ==========================================
-                          // LABORATORIOS (TODOS)
-                          // ==========================================
-                          _QuickAccessCard(
-                            icon: Icons.science,
-                            iconColor: const Color(0xFF2196F3),
-                            label: 'Laboratorios',
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const LaboratoriosScreen(),
-                                ),
-                              );
-                            },
-                          ),
+                            // MIS TAREAS (ADMIN Y AUXILIAR)
+                            _QuickAccessCard(
+                              icon: Icons.assignment,
+                              iconColor: const Color(0xFFFF9800),
+                              label: 'Mis Tareas',
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const TareasScreen(),
+                                  ),
+                                );
+                              },
+                            ),
 
-                          // ==========================================
-                          // MIS TAREAS (TODOS)
-                          // ==========================================
-                          _QuickAccessCard(
-                            icon: Icons.assignment,
-                            iconColor: const Color(0xFFFF9800),
-                            label: 'Mis Tareas',
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const TareasScreen(),
-                                ),
-                              );
-                            },
-                          ),
+                            // BITÁCORAS (ADMIN Y AUXILIAR)
+                            _QuickAccessCard(
+                              icon: Icons.description,
+                              iconColor: const Color(0xFF4CAF50),
+                              label: 'Bitácoras',
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const BitacorasScreen(),
+                                  ),
+                                );
+                              },
+                            ),
 
-                          // ==========================================
-                          // BITÁCORAS (TODOS)
-                          // ==========================================
-                          _QuickAccessCard(
-                            icon: Icons.description,
-                            iconColor: const Color(0xFF4CAF50),
-                            label: 'Bitácoras',
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const BitacorasScreen(),
-                                ),
-                              );
-                            },
-                          ),
-
-                          // ==========================================
-                          // OBJETOS PERDIDOS (TODOS)
-                          // ==========================================
-                          _QuickAccessCard(
-                            icon: Icons.inventory_2,
-                            iconColor: const Color(0xFF9C27B0),
-                            label: 'Objetos Perdidos',
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      const ObjetosPerdidosScreen(),
-                                ),
-                              );
-                            },
-                          ),
+                            // OBJETOS PERDIDOS (ADMIN Y AUXILIAR)
+                            _QuickAccessCard(
+                              icon: Icons.inventory_2,
+                              iconColor: const Color(0xFF9C27B0),
+                              label: 'Objetos Perdidos',
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const ObjetosPerdidosScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
                         ],
                       ),
                     ],
