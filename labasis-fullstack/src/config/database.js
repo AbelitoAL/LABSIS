@@ -26,6 +26,7 @@ class Database {
         password TEXT NOT NULL,
         nombre TEXT NOT NULL,
         rol TEXT NOT NULL DEFAULT 'auxiliar',
+        codigo TEXT,
         activo INTEGER DEFAULT 1,
         telefono TEXT,
         estado TEXT DEFAULT 'activo',
@@ -176,7 +177,7 @@ class Database {
     `);
 
     // ==========================================
-    // TABLAS NUEVAS PARA SISTEMA DE AUXILIARES
+    // TABLAS PARA SISTEMA DE AUXILIARES
     // ==========================================
 
     // Tabla de asignaciones de laboratorios a auxiliares
@@ -209,6 +210,77 @@ class Database {
         FOREIGN KEY (created_by) REFERENCES users(id)
       )
     `);
+
+    // ==========================================
+    // TABLAS PARA SISTEMA DE DOCENTES Y RESERVAS
+    // ==========================================
+
+    // Tabla de docentes (info adicional)
+    this.db.run(`
+      CREATE TABLE IF NOT EXISTS docentes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL UNIQUE,
+        codigo TEXT NOT NULL UNIQUE,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        created_by INTEGER,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (created_by) REFERENCES users(id)
+      )
+    `);
+
+    // Tabla de reservas de laboratorios
+    this.db.run(`
+      CREATE TABLE IF NOT EXISTS reservas (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        docente_id INTEGER NOT NULL,
+        laboratorio_id INTEGER NOT NULL,
+        fecha DATE NOT NULL,
+        hora_inicio TIME NOT NULL,
+        hora_fin TIME NOT NULL,
+        materia TEXT NOT NULL,
+        descripcion TEXT,
+        estado TEXT DEFAULT 'pendiente',
+        motivo_rechazo TEXT,
+        aprobada_por INTEGER,
+        aprobada_en DATETIME,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (docente_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (laboratorio_id) REFERENCES laboratorios(id) ON DELETE CASCADE,
+        FOREIGN KEY (aprobada_por) REFERENCES users(id)
+      )
+    `, (err) => {
+      if (err) {
+        console.error('Error creando tabla reservas:', err.message);
+      } else {
+        // Crear índices solo después de que la tabla existe
+        this.db.run(`CREATE INDEX IF NOT EXISTS idx_reservas_docente ON reservas(docente_id)`);
+        this.db.run(`CREATE INDEX IF NOT EXISTS idx_reservas_laboratorio ON reservas(laboratorio_id)`);
+        this.db.run(`CREATE INDEX IF NOT EXISTS idx_reservas_fecha ON reservas(fecha)`);
+        this.db.run(`CREATE INDEX IF NOT EXISTS idx_reservas_estado ON reservas(estado)`);
+      }
+    });
+
+    // Crear índice para docentes
+    this.db.run(`
+      CREATE TABLE IF NOT EXISTS docentes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL UNIQUE,
+        codigo TEXT NOT NULL UNIQUE,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        created_by INTEGER,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (created_by) REFERENCES users(id)
+      )
+    `, (err) => {
+      if (err) {
+        console.error('Error creando tabla docentes:', err.message);
+      } else {
+        this.db.run(`CREATE INDEX IF NOT EXISTS idx_docentes_codigo ON docentes(codigo)`);
+      }
+    });
 
     console.log('✅ Tablas de base de datos inicializadas');
   }

@@ -32,13 +32,16 @@ class ApiConfig {
   // Endpoints de estadísticas
   static const String statsEndpoint = '/api/stats';
   static const String dashboardEndpoint = '/api/stats/dashboard';
-  static const String statsAuxiliaresEndpoint = '/api/stats/auxiliares'; // ← Renombrado para claridad
+  static const String statsAuxiliaresEndpoint = '/api/stats/auxiliares';
   
   // Endpoints de manuales
   static const String manualesEndpoint = '/api/manuales';
   
-  // Endpoints de auxiliares (gestión) ← NUEVO
+  // Endpoints de auxiliares (gestión)
   static const String auxiliaresEndpoint = '/api/auxiliares';
+  
+  // Endpoints de docentes (gestión) ← NUEVO
+  static const String docentesEndpoint = '/api/docentes';
   
   // Endpoint de upload
   static const String uploadEndpoint = '/api/upload';
@@ -77,19 +80,3 @@ class ApiConfig {
     return '${buildUrl(dashboardEndpoint)}?auxiliar_id=$auxiliarId';
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

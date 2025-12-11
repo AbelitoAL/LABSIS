@@ -9,9 +9,10 @@ import '../bitacoras/bitacoras_screen.dart';
 import '../objetos_perdidos/objetos_perdidos_screen.dart';
 import '../asistente/asistente_screen.dart';
 import '../estadisticas/estadisticas_screen.dart';
-import '../manuales/manuales_screen.dart'; // ← NUEVO
+import '../manuales/manuales_screen.dart';
 import '../perfil/perfil_screen.dart';
 import '../auxiliares/auxiliares_screen.dart';
+import '../docentes/docentes_screen.dart'; // ← NUEVO
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -191,7 +192,43 @@ class _HomeContent extends StatelessWidget {
                             ),
 
                           // ==========================================
-                          // MANUALES (TODOS) ← NUEVO
+                          // AUXILIARES (SOLO ADMIN)
+                          // ==========================================
+                          if (user?.rol == 'admin')
+                            _QuickAccessCard(
+                              icon: Icons.people,
+                              iconColor: const Color(0xFFFF6B6B),
+                              label: 'Auxiliares',
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const AuxiliaresScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+
+                          // ==========================================
+                          // DOCENTES (SOLO ADMIN) ← NUEVO
+                          // ==========================================
+                          if (user?.rol == 'admin')
+                            _QuickAccessCard(
+                              icon: Icons.school,
+                              iconColor: const Color(0xFF1976D2),
+                              label: 'Docentes',
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const DocentesScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+
+                          // ==========================================
+                          // MANUALES (TODOS)
                           // ==========================================
                           _QuickAccessCard(
                             icon: Icons.menu_book,
@@ -206,22 +243,9 @@ class _HomeContent extends StatelessWidget {
                               );
                             },
                           ),
-                            if (user?.rol == 'admin')
-                              _QuickAccessCard(
-                                icon: Icons.people,
-                                iconColor: const Color(0xFFFF6B6B),
-                                label: 'Auxiliares',
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => const AuxiliaresScreen(),
-                                    ),
-                                  );
-                                },
-                              ),
+
                           // ==========================================
-                          // TARJETAS EXISTENTES
+                          // LABORATORIOS (TODOS)
                           // ==========================================
                           _QuickAccessCard(
                             icon: Icons.science,
@@ -236,6 +260,10 @@ class _HomeContent extends StatelessWidget {
                               );
                             },
                           ),
+
+                          // ==========================================
+                          // MIS TAREAS (TODOS)
+                          // ==========================================
                           _QuickAccessCard(
                             icon: Icons.assignment,
                             iconColor: const Color(0xFFFF9800),
@@ -249,6 +277,10 @@ class _HomeContent extends StatelessWidget {
                               );
                             },
                           ),
+
+                          // ==========================================
+                          // BITÁCORAS (TODOS)
+                          // ==========================================
                           _QuickAccessCard(
                             icon: Icons.description,
                             iconColor: const Color(0xFF4CAF50),
@@ -262,6 +294,10 @@ class _HomeContent extends StatelessWidget {
                               );
                             },
                           ),
+
+                          // ==========================================
+                          // OBJETOS PERDIDOS (TODOS)
+                          // ==========================================
                           _QuickAccessCard(
                             icon: Icons.inventory_2,
                             iconColor: const Color(0xFF9C27B0),
