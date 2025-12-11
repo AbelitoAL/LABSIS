@@ -96,15 +96,16 @@ class ObjetosPerdidosController {
       const result = await db.run(
         `INSERT INTO objetos_perdidos (
           foto_objeto, descripcion, categoria, laboratorio_id,
-          auxiliar_encontro_id, fecha_encontrado
-        ) VALUES (?, ?, ?, ?, ?, ?)`,
+          auxiliar_encontro_id, fecha_encontrado, estado
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
           foto_objeto || null,
           descripcion,
           categoria || 'otros',
           laboratorio_id,
           req.user.id,
-          fecha_encontrado || new Date().toISOString()
+          fecha_encontrado || new Date().toISOString(),
+          'en_custodia' // Estado inicial
         ]
       );
 
@@ -203,6 +204,14 @@ class ObjetosPerdidosController {
         return res.status(404).json({
           success: false,
           message: 'Objeto no encontrado'
+        });
+      }
+
+      // No permitir editar si ya fue entregado
+      if (objeto.estado === 'entregado') {
+        return res.status(400).json({
+          success: false,
+          message: 'No se puede editar un objeto ya entregado'
         });
       }
 

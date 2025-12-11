@@ -8,7 +8,7 @@ class ObjetoPerdidoModel {
   final int laboratorioId;
   final int auxiliarEncontroId;
   final String fechaEncontrado;
-  final String estado; // 'encontrado', 'entregado'
+  final String estado; // 'en_custodia', 'entregado'
   final Map<String, dynamic>? entrega;
   final String? createdAt;
   final String? updatedAt;
@@ -37,7 +37,7 @@ class ObjetoPerdidoModel {
       laboratorioId: json['laboratorio_id'] as int,
       auxiliarEncontroId: json['auxiliar_encontro_id'] as int,
       fechaEncontrado: json['fecha_encontrado'] as String,
-      estado: json['estado'] as String? ?? 'encontrado',
+      estado: json['estado'] as String? ?? 'en_custodia',
       entrega: json['entrega'] as Map<String, dynamic>?,
       createdAt: json['created_at'] as String?,
       updatedAt: json['updated_at'] as String?,
@@ -66,16 +66,35 @@ class ObjetoPerdidoModel {
     switch (estado.toLowerCase()) {
       case 'entregado':
         return '#4CAF50'; // Verde
-      case 'encontrado':
-        return '#FF9800'; // Naranja
+      case 'en_custodia':
+        return '#2196F3'; // Azul
       default:
         return '#9E9E9E'; // Gris
     }
   }
 
+  // Obtener emoji según estado
+  String get estadoEmoji {
+    switch (estado.toLowerCase()) {
+      case 'entregado':
+        return '✅';
+      case 'en_custodia':
+        return '📦';
+      default:
+        return '❓';
+    }
+  }
+
   // Obtener texto del estado
   String get estadoTexto {
-    return estado.toUpperCase();
+    switch (estado.toLowerCase()) {
+      case 'entregado':
+        return 'ENTREGADO';
+      case 'en_custodia':
+        return 'EN CUSTODIA';
+      default:
+        return estado.toUpperCase();
+    }
   }
 
   // Obtener texto de la categoría
@@ -116,5 +135,15 @@ class ObjetoPerdidoModel {
       default:
         return '📦';
     }
+  }
+
+  // Verificar si puede ser entregado
+  bool get puedeSerEntregado {
+    return estado.toLowerCase() == 'en_custodia';
+  }
+
+  // Verificar si fue entregado
+  bool get fueEntregado {
+    return estado.toLowerCase() == 'entregado';
   }
 }
